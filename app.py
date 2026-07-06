@@ -288,8 +288,13 @@ elif "Manipulation" in tool:
             patterns = r["detected_patterns"]
             chips = "".join([f'<span class="chip chip-purple">{p.replace("_"," ").title()}</span>' for p in patterns])
             chips_html = f'<div class="chip-row">{chips}</div>' if chips else '<div style="font-family:JetBrains Mono,monospace;font-size:0.78rem;color:#10b981;margin-top:0.8rem;">✓ No manipulation patterns detected</div>'
-            details = "".join([f'<div class="finding-item"><span style="color:#6C63FF;">[{p.replace("_"," ").title()}]</span> {" · ".join([f\'"{m}"\' for m in matches[:2]])}</div>' for p, matches in patterns.items()])
-            st.markdown(f'{result_header(r["risk_level"],r["score"],r["color"])}<div class="advice-text">→ {r["advice"]}</div>{chips_html}{"<div class=findings>" + details + "</div>" if details else ""}</div>', unsafe_allow_html=True)
+            details = ""
+            for p, matches in patterns.items():
+                label = p.replace("_", " ").title()
+                examples = " · ".join([f'"{m}"' for m in matches[:2]])
+                details += f'<div class="finding-item"><span style="color:#6C63FF;">[{label}]</span> {examples}</div>'
+            findings_block = f'<div class="findings">{details}</div>' if details else ""
+            st.markdown(f'{result_header(r["risk_level"],r["score"],r["color"])}<div class="advice-text">→ {r["advice"]}</div>{chips_html}{findings_block}</div>', unsafe_allow_html=True)
         else:
             st.warning("Paste a message to analyze.")
 
